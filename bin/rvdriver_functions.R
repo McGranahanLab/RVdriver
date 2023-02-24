@@ -47,18 +47,21 @@ rvdriver <- function(comp_df, synonymous_background_filt, seed_list, synon_thres
   }
 
   all_res <- do.call(rbind, all_iterations)
-  
+
+  geometric_mean_pval <- exp(mean(log(all_res$pval), na.rm = T))
+
 
   m <- all_res %>%
     group_by(method) %>%
     summarise(t_value = median(t_value), df = median(df)) %>%
     mutate(pval = pt(t_value, df, lower.tail = FALSE)) %>%
+    mutate(geometric_mean_pval) %>%
     mutate(num_mutations = length(unique(comp_df$patient_id))) %>%
     mutate(gene = as.character(gene)) %>%
     mutate(number_synonymous_filtered = unique(synon_threshold)) %>%
     mutate(method = as.character(method)) %>% 
     select(method, gene, t_value,
-           pval, num_mutations,
+           pval, geometric_mean_pval, num_mutations,
            number_synonymous_filtered)
 
   return(m) 
@@ -90,3 +93,4 @@ get_rna_vaf_res <- function(comp_df, g){
                                          pval = pval)
   return(res)
 }
+

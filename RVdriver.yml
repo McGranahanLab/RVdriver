@@ -1,6 +1,5 @@
 name: RVdriver
 channels:
-  - bcbio
   - defaults
   - conda-forge
 dependencies:
@@ -212,5 +211,4 @@ dependencies:
   - xz=5.2.10=h5eee18b_1
   - zlib=1.2.13=h166bdaf_4
   - zstd=1.5.2=ha4553b6_0
-prefix: /camp/project/proj-tracerx-lung/tctProjects/mcgranahanLab/jonest/apps/anaconda/envs/RVdriver
 
