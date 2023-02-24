@@ -3,12 +3,12 @@ A statistical approach to detect cancer driver genes utilising the RNA Variant A
 
 ## Inputs
 
-RVdriver only requires a simple tab deliminted mutation table in the following input
+RVdriver only requires a simple tab deliminted mutation table in the following format
 
 patient_id | gene | CSRA | RNA_ref_count | RNA_alt_count | RNA_VAF | func | canc_type 
 ----|----|------|-----|------|------|------|------
 
-an example mutation table is geiven [here](./assets/UVM_example_data.txt)
+an example mutation table is given [here](./assets/UVM_example_data.txt)
 
 ### The following steps are needed to run RVdriver on the example dataset:
 1. clone this repo
