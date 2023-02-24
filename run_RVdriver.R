@@ -1,6 +1,6 @@
 library(tidyverse)
 library(lmerTest)
-library(argsparse)
+library(argparse)
 
 ########################################## START ##########################################
 
@@ -15,11 +15,11 @@ parser$add_argument('--canc_type',  nargs=1,
                     help='cancer type of interest',
                     required=TRUE)
 parser$add_argument('--mutation_filter',  nargs=1,
-                    help='cancer type of interest',
-                    required=FALSE, default = 3)
+                    help='number of required mutations for a gene to be tested',
+                    required=FALSE, default=3, type = "double")
 parser$add_argument('--out_dir',  nargs=1,
                     help='cancer type of interest',
-                    required=FALSE, default = 3)
+                    required=FALSE, default = "RVdriver_results_table.csv")
 
 args <- parser$parse_args()
 
@@ -31,16 +31,20 @@ outdir <- args$out_dir
 depth_filt <- 8
 seed_list <- read_tsv("assets/seed_list.txt")
 
+
+print(args)
 # set seed
 set.seed(999)
 
 # source functions required to run RVdriver
 source("./bin/rvdriver_functions.R")
 
+cat("Reading in mutation table ... ")
 # load mutation table
 rna_muts_table <- read_tsv(input_mutations_path) %>%
     filter(canc_type == cancer_type)
 
+cat("Reading in CGC list ... ")
 # add cgc list
 cgc_list <- read_csv("./assets/cgc_list.csv") %>%
   mutate(is_cgc = TRUE)
@@ -64,10 +68,8 @@ passed_genes <- rna_muts_table %>%
     filter(RNA_depth >= depth_filt) %>%
     select(patient_id, gene) %>% unique() %>%
     summarise(num_muts = n()) %>%
-    filter(num_muts_above_depth_filter > num_muts_filt) %>%
-    select(gene, num_muts) %>% unique() %>%
-    mutate(prop_cohort_mut = num_muts / length(unique(rna_muts_table$patient_id)))
-
+    filter(num_muts > num_muts_filt) %>%
+    select(gene, num_muts_above_depth_filter = num_muts) 
         
 # Synonymous mutations
 synonymous_background <- rna_muts_table %>% filter(func == "Silent")
@@ -105,7 +107,10 @@ results_table <- lapply(unique(passed_genes$gene), synonymous_background, FUN = 
 
         results_table <- results_table %>%
           mutate(depth_filter = depth_filt) %>%
-          mutate(cancer_type)
+          mutate(cancer_type) %>%
+          mutate(prop_cohort_filt = num_muts_above_depth_filter / length(unique(rna_muts_table$patient_id))) %>%
+          mutate(p.adj = p.adjust(pval, "BH")) %>%
+          arrange(p.adj)
 
 # make out dir if it doesnt exist
 if(!dir.exists(outdir)){
@@ -115,3 +120,4 @@ if(!dir.exists(outdir)){
 # write results 
 
 write.csv(results_table, file = paste0(outdir,"/", cancer_type,"_rvdriver_results.csv"),        
+          quote = F, row.names = F)
