@@ -16,11 +16,11 @@ an example mutation table is geiven [here](./assets/UVM_example_data.txt)
 ```
 conda env create --name RVdriver --file=RVdriver.yml
 ```
-4. Activate the conda environment
+3. Activate the conda environment
 ```
 conda activate RVdriver
 ```
-5. run RVdriver
+4. run RVdriver
 ```
 Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
 ```
