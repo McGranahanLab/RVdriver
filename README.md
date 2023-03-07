@@ -45,12 +45,10 @@ mkdir singularity_images
 cd singularity_images/
 singularity pull --arch amd64 library://tpjones15/default/rvdriver:latest
 ```    
-The mutation table should be in the data directory and have the following columns:
+The mutation table can be a single table with all samples or multiple sample specific tables. It must have the following columns:
 
 patient_id | gene | chr | pos | ref | alt | func | canc_type 
 ----|----|------|-----|-----|-----|------|-----
-
-It can be a single table with all samples or multiple sample specific tables
 
 3. Run the following bash script to get the RNA VAF for a single sample
 ```
