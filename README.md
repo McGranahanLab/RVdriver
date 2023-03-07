@@ -34,23 +34,23 @@ The results should be the same as those presented [here](./test_data_results/UVM
 
 #### The following steps were taken to get the RNA VAFs for somatic mutations across the pan cancer TCGA dataset
 
-1. Download the following files (store them in the assets directory):
+1. Download the following files and store them in the assets directory. These files are required for GATK preprocessing (MarkDuplicates and BQSR):
     - [TCGA reference genome](https://gdc.cancer.gov/about-data/gdc-data-processing/gdc-reference-files) 
     - [dbsnp_138_vcf](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf)
     - [dbsnp_138_vcf_idx](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx)
-    
+
 2. Pull the RVdriver singularity container
 ```
 mkdir singularity_images
 cd singularity_images/
 singularity pull --arch amd64 library://tpjones15/default/rvdriver:latest
 ```    
-The mutation table should be in the data have the following columns:
+The mutation table should be in the data directory and have the following columns:
 
 patient_id | gene | chr | pos | ref | alt | func | canc_type 
 ----|----|------|-----|-----|-----|------|-----
 
-It can be a single table with all samples or single sample
+It can be a single table with all samples or multiple sample specific tables
 
 3. Run the following bash script to get the RNA VAF for a single sample
 ```
