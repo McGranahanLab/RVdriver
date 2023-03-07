@@ -72,4 +72,4 @@ muts_df <- muts_df %>%
     select(patient_id, sample_id, gene, CSRA, RNA_ref_count, RNA_alt_count, RNA_VAF, func, canc_type)
 
 # write output
-write.csv(muts_df, file = paste0(out_dir, "/", sample_id, "_RNA_VAF_mutable.csv"), quote = F, row.names = F)
+write.table(muts_df, file = paste0(out_dir, "/", sample_id, "_RNA_VAF_mutable.csv"), quote = F, row.names = F, col.names = T, sep = "\t")
