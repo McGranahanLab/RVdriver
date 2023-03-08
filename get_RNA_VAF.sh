@@ -36,13 +36,26 @@ while getopts "b:p:m:o:w:s" opt; do
 done
 shift $((OPTIND-1))
 
+# Check if required arguments are set
+if [ -z "$rna_bam" ] || \
+   [ -z "$patient_id" ] || \
+   [ -z "$rna_sample_id" ] || \
+   [ -z "$mut_path" ] || \
+   [ -z "$out_dir" ] || \
+   [ -z "$work_dir" ]
+then
+    echo -e "Error: Missing required argument(s)\n"
+    echo -e "Usage: ./get_RNA_VAF.sh -b <rna_bam> -p <patient_id> -s <rna_sample_id> -m <mut_path> -o <out_dir> -w <work_dir>\n"
+    exit 1
+fi
+
 # paths
 baseDir="${PWD}"
 dbsnp_138_hg38="${baseDir}/assets/Homo_sapiens_assembly38.dbsnp138.vcf"
 singularityDir="${baseDir}/singularity_images/"
 hg38_reference="${baseDir}/assets/GRCh38.d1.vd1.fa"
 
-singularity_command="singularity exec --bind /SAN/:/SAN/ ${singularityDir}/rvdriver_latest.sif"
+singularity_command="singularity exec --bind ${PWD}:${PWD} ${singularityDir}/rvdriver_latest.sif"
 
 # Check if the working directory exists
 if [ ! -d "$work_dir" ]; then
