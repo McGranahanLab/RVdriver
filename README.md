@@ -28,18 +28,22 @@ singularity pull --arch amd64 library://tpjones15/default/rvdriver:latest
 ```
 4. run RVdriver
 ```
+# for conda
 Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
+
+# for singularity 
+singularity exec singularity_images/rvdriver_latest.sif Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
 ```
 The results should be the same as those presented [here](./test_data_results/UVM_rvdriver_results.csv)
 
-#### The following steps were taken to get the RNA VAFs for somatic mutations across the pan cancer TCGA dataset
+#### The following steps were taken to calculate the RNA VAFs for somatic mutations across the pan cancer TCGA dataset
 
 1. Download the following files and store them in the assets directory. These files are required for GATK preprocessing (MarkDuplicates and BQSR):
     - [TCGA reference genome](https://gdc.cancer.gov/about-data/gdc-data-processing/gdc-reference-files) 
     - [dbsnp_138_vcf](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf)
     - [dbsnp_138_vcf_idx](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx)
 
-2. Pull the RVdriver singularity container
+2. Pull the RVdriver singularity container if not done already
 ```
 mkdir singularity_images
 cd singularity_images/
@@ -50,7 +54,7 @@ The mutation table can be a single table with all samples or multiple sample spe
 patient_id | gene | chr | pos | ref | alt | func | canc_type 
 ----|----|------|-----|-----|-----|------|-----
 
-3. Run the following bash script to get the RNA VAF for a single sample
+3. Run the following bash script to get the RNA VAFs for all SNVs within a single sample
 ```
 bash get_RNA_VAF.sh -b ${rna_bam_path} -p ${patient_id} \
         -m ${mut_path} -o ${out_dir} -w ${work_dir} \
