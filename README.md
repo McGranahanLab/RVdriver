@@ -43,7 +43,7 @@ The results should be the same as those presented [here](./test_data_results/UVM
     - [dbsnp_138_vcf](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf)
     - [dbsnp_138_vcf_idx](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx)
 
-2. Pull the RVdriver singularity container if not done already
+2. Pull the RVdriver singularity container 
 ```
 mkdir singularity_images
 cd singularity_images/
@@ -56,7 +56,7 @@ patient_id | gene | chr | pos | ref | alt | func | canc_type
 
 3. Run the following bash script to get the RNA VAFs for all SNVs within a single sample
 ```
-bash get_RNA_VAF.sh -b ${rna_bam_path} -p ${patient_id} \
-        -m ${mut_path} -o ${out_dir} -w ${work_dir} \
+bash get_RNA_VAF.sh -b ${rna_bam} -p ${patient_id} \
+        -m ${mutation_table} -o ${out_dir} -w ${work_dir} \
         -s ${rna_sample_id}
 ```
