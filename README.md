@@ -18,7 +18,7 @@ cd RVdriver
 ```
 if necessary, create the conda environment containing the required R packages (all that is required to run RVdriver is argparse, tidyverse and lmerTest)
 ```
-conda env create --name RVdriver r-tidyverse r-argparse r-lmertest
+conda create --name RVdriver r-tidyverse r-argparse r-lmertest
 ```
 Activate the conda environment
 ```
