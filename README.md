@@ -12,9 +12,13 @@ an example mutation table is given [here](./assets/UVM_example_data.txt)
 
 ### The following steps are needed to run RVdriver on the example dataset:
 1. clone this repo
-if necessary, create the required conda environment (all that is required to run RVdriver is argparse, tidyverse and lmerTest)
 ```
-conda env create --name RVdriver --file=RVdriver.yml
+git clone https://github.com/McGranahanLab/RVdriver.git
+cd RVdriver
+```
+if necessary, create the conda environment containing the required R packages (all that is required to run RVdriver is argparse, tidyverse and lmerTest)
+```
+conda env create --name RVdriver r-tidyverse r-argparse r-lmertest
 ```
 Activate the conda environment
 ```
@@ -25,16 +29,18 @@ OR using a singularity container
 mkdir singularity_images
 cd singularity_images/
 singularity pull --arch amd64 library://tpjones15/default/rvdriver:latest
+cd ../
 ```
-4. run RVdriver
+2. run RVdriver
 ```
 # for conda
 Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
 
 # for singularity 
-singularity exec singularity_images/rvdriver_latest.sif Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
+singularity exec -B ${PWD}:${PWD} singularity_images/rvdriver_latest.sif Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
 ```
-The results should be the same as those presented [here](./test_data_results/UVM_rvdriver_results.csv)
+This will create a results table in the ```test/``` directory.  
+These results should be the same as those presented [here](./test_data_results/UVM_rvdriver_results.csv)
 
 #### The following steps were taken to calculate the RNA VAFs for somatic mutations across the pan cancer TCGA dataset
 
@@ -43,7 +49,7 @@ The results should be the same as those presented [here](./test_data_results/UVM
     - [dbsnp_138_vcf](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf)
     - [dbsnp_138_vcf_idx](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx)
 
-2. Pull the RVdriver singularity container 
+2. Pull the relevent singularity container (this singularity image can also be used to run RVdriver as above) 
 ```
 mkdir singularity_images
 cd singularity_images/
