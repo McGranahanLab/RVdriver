@@ -35,7 +35,8 @@ cd ../
 ```
 # for conda
 Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
-
+```
+```
 # for singularity 
 singularity exec -B ${PWD}:${PWD} singularity_images/rvdriver_latest.sif Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
 ```
