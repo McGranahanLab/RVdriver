@@ -1,6 +1,8 @@
-library(deepSNV)
-library(argparse)
-library(tidyverse)
+cat("Loading Packages ...\n")       
+
+suppressMessages(library(tidyverse))
+suppressMessages(library(deepSNV)) 
+suppressMessages(library(argparse)) 
 
 ########################################## START ##########################################
 
@@ -28,26 +30,28 @@ args <- parser$parse_args()
 
 mut_path <- args$mut_path
 rna_bam <- args$rna_bam
-sample_id <- args$sample_id
+samp_id <- args$sample_id
 pat_id <- args$patient_id
 out_dir <- args$out_dir
 
 print(args)
 
+cat("Loading patient mutation table\n")
 # get sample mutation file
 muts_df <- read.csv(mut_path) %>%
     filter(patient_id == pat_id)
 
 # add rna sample id
-muts_df$rna_sample_id = as.character(sample_id)
+muts_df$rna_sample_id = as.character(samp_id)
 
 # add bam path
 muts_df$rna_bam_path = as.character(rna_bam)
 
+msg <- paste0("calculating the RNA VAF for ", nrow(muts_df), " mutations...\n")
+cat(msg)
 # get RNA VAF
 for(x_idx in 1:nrow(muts_df)){
     if(!is.na(rna_bam) & !is.na(muts_df[x_idx,"pos"])){
-        print(x_idx)
         rna_reads_output <- as.data.frame(bam2R(file = rna_bam,
                                                 chr = muts_df[x_idx,"chr"],
                                                 start = muts_df[x_idx,"pos"],
@@ -69,7 +73,10 @@ for(x_idx in 1:nrow(muts_df)){
 #create output table
 muts_df <- muts_df %>%
     mutate(CSRA = paste0(chr,":",pos,":",ref,":",alt)) %>%
-    select(patient_id, sample_id, gene, CSRA, RNA_ref_count, RNA_alt_count, RNA_VAF, func, canc_type)
+    dplyr::select(patient_id, rna_sample_id, gene, CSRA, RNA_ref_count, RNA_alt_count, RNA_VAF, func, canc_type)
 
+msg <- paste0("Writing output (",out_dir, "/", samp_id, "_RNA_VAF_mutable.csv)\n")
+cat(msg)
+cat("Done!\n")
 # write output
-write.table(muts_df, file = paste0(out_dir, "/", sample_id, "_RNA_VAF_mutable.csv"), quote = F, row.names = F, col.names = T, sep = "\t")
+write.table(muts_df, file = paste0(out_dir, "/", samp_id, "_RNA_VAF_mutable.csv"), quote = F, row.names = F, col.names = T, sep = "\t")
