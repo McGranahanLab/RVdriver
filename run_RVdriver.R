@@ -1,6 +1,8 @@
-library(tidyverse)
-library(lmerTest)
-library(argparse)
+cat("Loading Packages ...\n")
+
+suppressMessages(library(tidyverse))
+suppressMessages(library(lmerTest))
+suppressMessages(library(argparse))
 
 ########################################## START ##########################################
 
@@ -29,7 +31,7 @@ cancer_type <- args$canc_type
 num_muts_filt <- as.numeric(args$mutation_filter)
 outdir <- args$out_dir
 depth_filt <- 8
-seed_list <- read_tsv("assets/seed_list.txt")
+seed_list <- read_tsv("assets/seed_list.txt", col_types = cols())
 
 
 print(args)
@@ -39,19 +41,15 @@ set.seed(999)
 # source functions required to run RVdriver
 source("./bin/rvdriver_functions.R")
 
-cat("Reading in mutation table ... ")
+cat("Reading in mutation table ... \n")
 # load mutation table
-rna_muts_table <- read_tsv(input_mutations_path) %>%
+rna_muts_table <- read_tsv(input_mutations_path, col_types = cols()) %>%
     filter(canc_type == cancer_type)
 
-cat("Reading in CGC list ... ")
+cat("Reading in CGC list ... \n")
 # add cgc list
-cgc_list <- read_csv("./assets/cgc_list.csv") %>%
+cgc_list <- read_csv("./assets/cgc_list.csv", col_types = cols()) %>%
   mutate(is_cgc = TRUE)
-
-rna_muts_table <- rna_muts_table %>% left_join(cgc_list)
-
-rna_muts_table$is_cgc[is.na(rna_muts_table$is_cgc)] <- FALSE
 
 # calculate rna depth
 rna_muts_table$RNA_depth <- rna_muts_table$RNA_alt_count + rna_muts_table$RNA_ref_count
@@ -69,28 +67,34 @@ passed_genes <- rna_muts_table %>%
     select(patient_id, gene) %>% unique() %>%
     summarise(num_muts = n()) %>%
     filter(num_muts > num_muts_filt) %>%
-    select(gene, num_muts_above_depth_filter = num_muts) 
-        
+    select(gene, num_muts_above_depth_filter = num_muts)
+
 # Synonymous mutations
 synonymous_background <- rna_muts_table %>% filter(func == "Silent")
 
+
+msg <- paste0("Running RVdriver on ", nrow(passed_genes), " genes with sufficient mutations\n")
+
+cat(msg)
 # run RVdriver
-results_table <- lapply(unique(passed_genes$gene), synonymous_background, FUN = function(g, synonymous_background){
-  cat("Testing", g,"...\n")
+results_table <- lapply(1:length(unique(passed_genes$gene)), synonymous_background, FUN = function(g, synonymous_background){
+    msg <- paste0("Testing gene ", g, " out of ", nrow(passed_genes), "\n")
+    cat(msg)
+    g <- unique(passed_genes$gene)[g]
     # get gene df
     gene_df <- rna_muts_table %>% filter(gene == g, func %in% non_synonymous_key) %>%
     select(patient_id, RNA_VAF, gene, RNA_depth) %>%
-      mutate(func = "non_synonymous") 
+      mutate(func = "non_synonymous")
 
-    # synonymous mutations of samples with mutations in GOI - remove low coverage mutations 
+    # synonymous mutations of samples with mutations in GOI - remove low coverage mutations
     synonymous_background_filt <- synonymous_background %>%
       filter(patient_id %in% gene_df$patient_id) %>%
       filter(RNA_depth > 7) %>%
       select(patient_id, RNA_VAF, gene, RNA_depth) %>%
-      mutate(func = "synonymous") 
+      mutate(func = "synonymous")
 
   # perform test
-  res <- rvdriver(gene_df, synonymous_background_filt, seed_list, synon_threshold = 10, 50, g) 
+  res <- rvdriver(gene_df, synonymous_background_filt, seed_list, synon_threshold = 10, 50, g)
 
     return(res)
         })
@@ -112,12 +116,14 @@ results_table <- lapply(unique(passed_genes$gene), synonymous_background, FUN = 
           mutate(p.adj = p.adjust(pval, "BH")) %>%
           arrange(p.adj)
 
+msg <- paste0("Finished running RVdriver, saving results file to out_dir (",getwd(),"/",outdir,")\n")
+cat(msg)
 # make out dir if it doesnt exist
 if(!dir.exists(outdir)){
   dir.create(outdir)
 }
 
-# write results 
+# write results
 
-write.csv(results_table, file = paste0(outdir,"/", cancer_type,"_rvdriver_results.csv"),        
+write.csv(results_table, file = paste0(outdir,"/", cancer_type,"_rvdriver_results.csv"),
           quote = F, row.names = F)
