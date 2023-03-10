@@ -54,7 +54,7 @@ These results should be the same as those presented [here](./test_data_results/U
 ```
 mkdir singularity_images
 cd singularity_images/
-singularity pull --arch amd64 library://tpjones15/default/rvdriver:latest
+singularity pull --arch amd64 library://tpjones15/default/rvdriver_rnavaf:latest
 ```    
 The mutation table can be a single table with all samples or multiple sample specific tables. It must have the following columns:
 
