@@ -12,7 +12,7 @@ myTryCatch <- function(expr) {
   list(value=value, warning=warn, error=err)
 }
 
-rvdriver <- function(comp_df, synonymous_background_filt, seed_list, synon_threshold, num_tests, gene){
+rvdriver <- function(gene_mut_df, synon_background, seed_list, synon_threshold, num_tests, gene){
   all_iterations <- list()
 
   for(iteration in 1:num_tests){
@@ -20,8 +20,8 @@ rvdriver <- function(comp_df, synonymous_background_filt, seed_list, synon_thres
 
     # sample 10 synon from each region
     synonymous_background_filt_threshold <- c()
-    for(i in unique(synonymous_background_filt$patient_id)){
-        region_synon <- synonymous_background_filt %>%
+    for(i in unique(synon_background$patient_id)){
+        region_synon <- synon_background %>%
             filter(patient_id == i)
         region_synon <- region_synon[sample(1:nrow(region_synon), replace = T, size = synon_threshold),]
         synonymous_background_filt_threshold <- rbind(synonymous_background_filt_threshold, region_synon)
@@ -30,7 +30,7 @@ rvdriver <- function(comp_df, synonymous_background_filt, seed_list, synon_thres
     number_of_samples_in_synon <- length(unique(synonymous_background_filt_threshold$patient_id))
     numbers_with_synon <-length(unique(synonymous_background_filt$patient_id))
 
-  comp_df <- rbind(comp_df, synonymous_background_filt_threshold)
+  comp_df <- rbind(gene_mut_df, synonymous_background_filt_threshold)
 
   comp_df$func <- factor(comp_df$func, levels = c("synonymous", "non_synonymous"))
 
