@@ -28,7 +28,7 @@ rvdriver <- function(gene_mut_df, synon_background, seed_list, synon_threshold, 
     }
     
     number_of_samples_in_synon <- length(unique(synonymous_background_filt_threshold$patient_id))
-    numbers_with_synon <-length(unique(synonymous_background_filt$patient_id))
+    numbers_with_synon <-length(unique(synon_background$patient_id))
 
   comp_df <- rbind(gene_mut_df, synonymous_background_filt_threshold)
 
