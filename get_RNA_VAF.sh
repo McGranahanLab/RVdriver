@@ -55,7 +55,7 @@ dbsnp_138_hg38="${baseDir}/assets/Homo_sapiens_assembly38.dbsnp138.vcf"
 singularityDir="${baseDir}/singularity_images/"
 hg38_reference="${baseDir}/assets/GRCh38.d1.vd1.fa"
 
-singularity_command="singularity exec --bind ${PWD}:${PWD} ${singularityDir}/rvdriver_latest.sif"
+singularity_command="singularity exec --bind ${PWD}:${PWD} ${singularityDir}/rvdriver_rnavaf_latest.sif"
 
 # Check if the working directory exists
 if [ ! -d "$work_dir" ]; then
