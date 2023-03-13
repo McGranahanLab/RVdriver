@@ -10,6 +10,15 @@ patient_id | gene | CSRA | RNA_ref_count | RNA_alt_count | RNA_VAF | func | canc
 
 an example mutation table is given [here](./assets/UVM_example_data.txt)
 
+within the ```func``` column, the following mutation types are accepted:
+```
+Missense_Mutation
+Nonsense_Mutation
+Nonstop_Mutation
+Splice_Site
+Silent
+```
+
 ### The following steps are needed to run RVdriver on the example dataset:
 1. clone this repo
 ```
