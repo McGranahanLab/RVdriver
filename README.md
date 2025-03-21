@@ -43,14 +43,14 @@ cd ../
 2. run RVdriver
 ```
 # for conda
-Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
+Rscript run_RVdriver.R -i "assets/UVM_mutation_table.rds" -c UVM -d 8 -s 8 -n 1 -p 2 -o test -l TRUE -sm "relaxed" -g TRUE
 ```
 ```
 # for singularity 
-singularity exec -B ${PWD}:${PWD} singularity_images/rvdriver_latest.sif Rscript run_RVdriver.R --mut_path assets/UVM_example_data.txt --canc_type UVM --out_dir test
+singularity exec -B ${PWD}:${PWD} singularity_images/rvdriver_latest.sif Rscript run_RVdriver.R "assets/UVM_mutation_table.rds" -c UVM -d 8 -s 8 -n 1 -p 2 -o test -l TRUE -sm "relaxed" -g TRUE
 ```
 This will create a results table in the ```test/``` directory.  
-These results should be the same as those presented [here](./test_data_results/UVM_rvdriver_results.csv)
+These results should be the same as those presented [here](./test_data_results/UVM)
 
 #### The following steps were taken to calculate the RNA VAFs for somatic mutations across the pan cancer TCGA dataset
 
