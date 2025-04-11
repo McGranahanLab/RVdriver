@@ -1,25 +1,26 @@
+library(RVdriver)
+
 # run_RVdriver_example.R
 # ------------------------------------------------------------------------------
 # This script demonstrates how to run the complete RVdriver pipeline.
 #
 # It performs the following steps:
-#   1. Reads the input mutation table, CGC list, and seed list.
-#   2. Preprocesses the mutation table.
-#   3. Performs NMD scaling on nonsense mutations.
-#   4. Computes RNA depth weights.
-#   5. Performs synonymous (silent) mutation scaling.
-#   6. Builds gene-level RVdriver input objects.
-#   7. Runs gene-wise RVdriver analysis over multiple iterations.
-#   8. Writes output CSV files and saves output plots to the specified output directory.
+#    Reads the input mutation table
+#    Preprocesses the mutation table.
+#    Performs NMD scaling on nonsense mutations.
+#    Computes RNA depth weights.
+#    Performs synonymous (silent) mutation scaling.
+#    Runs gene-wise RVdriver analysis over multiple iterations.
 #
-# Make sure your package (and all functions such as preprocess_mutation_table,
-# plot_nmd_scaling_comparison, compute_rna_depth_weights, perform_synonymous_scaling,
-# exponential_growth_limited_2x, calculate_rate, rvdriver, and plot_qq) are installed.
 # ------------------------------------------------------------------------------
 library(RVdriver)
-
-
-
+library(dplyr)
+library(ggforce)
+library(ggpubr)
+library(patchwork)
+library(parallel)
+library(ggplot2)
+library(tidyr)
 
 # --- PARAMETERS ---
 cancer_type       <- "UCS"                              # Change to your cancer type label
@@ -27,7 +28,7 @@ depth_filt        <- 8                                  # Minimum RNA depth for 
 synon_depth_filt  <- 8                                  # Minimum RNA depth for synonymous mutations
 num_muts_filt     <- 1                                  # Minimum number of mutations per gene
 ncores            <- 1                                  # Number of cores for parallel processing
-outdir            <- paste0("example_data/",
+outdir            <- paste0("./example_data/",
                             cancer_type, "_results/")   # Output directory (ensure it exists or will be created)
 silent_scaling    <- TRUE                               # Whether to perform silent (synonymous) scaling
 sampling_method   <- "relaxed"                          # Sampling method ("relaxed" or "strict")
@@ -52,6 +53,18 @@ cat("Include gene synonymous mutations:", include_gene_synons, "\n")
 
 # Set seed
 set.seed(999)
+
+# make output dir if it doesn't already exist:
+if (!dir.exists(outdir)) {
+  response <- readline(prompt = paste("Output directory", outdir, "does not exist. Create it? (y/n): "))
+  if (tolower(response) %in% c("y", "yes")) {
+    dir.create(outdir, recursive = TRUE)
+    cat("Directory created:", outdir, "\n")
+  } else {
+    stop("Output directory not created. Exiting.")
+  }
+}
+
 
 ### Read input tables
 if(grepl("rds$", mutation_path)) {
@@ -198,7 +211,7 @@ results_table <- lapply(
     proportion_sampled_per_patient_expo <- res_expo$proportion_sampled_per_patient %>%
       mutate(sampling_func = "expo")
     res_expo <- res_expo$res_df %>% mutate(sampling_func = "expo")
-
+    
     # Paste output to terminal per gene
     print(res_expo %>% select(gene, method, pval, number_synonymous_filtered, num_mutations))
     return(list(res = res_expo,
