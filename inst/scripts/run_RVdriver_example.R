@@ -16,11 +16,13 @@
 # plot_nmd_scaling_comparison, compute_rna_depth_weights, perform_synonymous_scaling,
 # exponential_growth_limited_2x, calculate_rate, rvdriver, and plot_qq) are installed.
 # ------------------------------------------------------------------------------
-library(RVdriver)      # Replace with the name of your package
+library(RVdriver)
+
+
 
 
 # --- PARAMETERS ---
-cancer_type       <- "UVM"                              # Change to your cancer type label
+cancer_type       <- "UCS"                              # Change to your cancer type label
 depth_filt        <- 8                                  # Minimum RNA depth for non-synonymous mutations
 synon_depth_filt  <- 8                                  # Minimum RNA depth for synonymous mutations
 num_muts_filt     <- 1                                  # Minimum number of mutations per gene
@@ -32,7 +34,7 @@ sampling_method   <- "relaxed"                          # Sampling method ("rela
 include_gene_synons <- TRUE                             # Whether to include gene-specific synonymous mutations
 
 # File paths for inputs (adapt these paths as necessary)
-mutation_path <- "example_data/UVM_mutation_table.rds"     # Mutation table (RDS or TSV)
+mutation_path <- system.file("example_data", "UCS_mutation_table.rds", package = "RVdriver")
 cgc_path      <- "inst/assets/cgc_list.csv"                 # Shipped with the package
 seed_path     <- "inst/assets/seed_list.txt"                # Shipped with the package
 
