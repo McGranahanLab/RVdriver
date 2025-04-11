@@ -1,9 +1,6 @@
-library(RVdriver)
-
 # run_RVdriver_example.R
 # ------------------------------------------------------------------------------
-# This script demonstrates how to run the complete RVdriver pipeline.
-#
+# Example RV driver Run 
 # It performs the following steps:
 #    Reads the input mutation table
 #    Preprocesses the mutation table.
