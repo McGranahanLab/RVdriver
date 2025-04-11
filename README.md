@@ -8,7 +8,7 @@ RVdriver only requires a simple tab deliminted or .RDS file mutation table in th
 patient_id | gene | CSRA | RNA_ref_count | RNA_alt_count | RNA_VAF | func | canc_type 
 ----|----|------|-----|------|------|------|------
 
-an example mutation table is given [here](./assets/UVM_mutation_table.rds)
+an example mutation table is given [here](./inst/example_data/UCS_mutation_table.rds)
 
 within the ```func``` column, the following mutation types are accepted:
 ```
@@ -20,37 +20,14 @@ Silent
 ```
 
 ### The following steps are needed to run RVdriver on the example dataset:
-1. clone this repo
+1. Install RVdriver and dependencies
 ```
-git clone https://github.com/McGranahanLab/RVdriver.git
-cd RVdriver
+devtools::install_github("https://github.com/McGranahanLab/RVdriver.git")
 ```
-if necessary, create the conda environment containing the required R packages (all that is required to run RVdriver is argparse, tidyverse and lmerTest)
-```
-conda create --name RVdriver r-tidyverse r-argparse r-lmertest
-```
-Activate the conda environment
-```
-conda activate RVdriver
-```
-OR using a singularity container
-```
-mkdir singularity_images
-cd singularity_images/
-singularity pull --arch amd64 library://tpjones15/default/rvdriver:latest
-cd ../
-```
-2. run RVdriver
-```
-# for conda
-Rscript run_RVdriver.R -i "assets/UVM_mutation_table.rds" -c UVM -d 8 -s 8 -n 1 -p 2 -o test -l TRUE -sm "relaxed" -g TRUE
-```
-```
-# for singularity 
-singularity exec -B ${PWD}:${PWD} singularity_images/rvdriver_latest.sif Rscript run_RVdriver.R "assets/UVM_mutation_table.rds" -c UVM -d 8 -s 8 -n 1 -p 2 -o test -l TRUE -sm "relaxed" -g TRUE
-```
-This will create a results table in the ```test/``` directory.  
-These results should be the same as those presented [here](./test_data_results/UVM)
+2. Run the [example script](./inst/scripts/run_RVdriver_example.R) for either UCS or UVM
+This will create a results table wherever specified which should match up the results found [here for UCS](.inst/example_data/UCS_results) or [here for UVM](.inst/example_data/UVM_results)
+
+The same script can be used for your own paired genomic-transcriptomic mutation data!
 
 #### The following steps were taken to calculate the RNA VAFs for somatic mutations across the pan cancer TCGA dataset
 
@@ -59,7 +36,7 @@ These results should be the same as those presented [here](./test_data_results/U
     - [dbsnp_138_vcf](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf)
     - [dbsnp_138_vcf_idx](https://console.cloud.google.com/storage/browser/_details/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx)
 
-2. Pull the relevent singularity container (this singularity image can also be used to run RVdriver as above) 
+2. Pull the relevent singularity container 
 ```
 mkdir singularity_images
 cd singularity_images/
