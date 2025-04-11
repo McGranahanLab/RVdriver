@@ -33,10 +33,10 @@ silent_scaling    <- TRUE                               # Whether to perform sil
 sampling_method   <- "relaxed"                          # Sampling method ("relaxed" or "strict")
 include_gene_synons <- TRUE                             # Whether to include gene-specific synonymous mutations
 
-# File paths for inputs (adapt these paths as necessary)
+# File paths for inputs 
 mutation_path <- system.file("example_data", "UCS_mutation_table.rds", package = "RVdriver")
-cgc_path      <- "inst/assets/cgc_list.csv"                 # Shipped with the package
-seed_path     <- "inst/assets/seed_list.txt"                # Shipped with the package
+cgc_path      <- system.file("assets", "cgc_list.csv", package = "RVdriver")                # Shipped with the package
+seed_path     <- system.file("assets", "seed_list.txt", package = "RVdriver")                # Shipped with the package
 
 
 # Print parameters
